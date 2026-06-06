@@ -1,11 +1,25 @@
 package auth
 
-import "example.com/svc/pkg/util"
+import (
+    "context"
+    "strings"
+
+    "example.com/svc/pkg/util"
+)
 
 var log = util.New("auth")
 
 // Validate checks a token. Returns true if valid.
-func Validate(token string) bool {
-    log.Info("validating token")
-    return token != ""
+// Token format: "<userid>:<exp-unix>:<sig>".
+func Validate(ctx context.Context, token string) bool {
+    log.InfoCtx(ctx, "validating token")
+    if token == "" {
+        return false
+    }
+    parts := strings.Split(token, ":")
+    if len(parts) != 3 {
+        return false
+    }
+    // TODO: verify signature
+    return true
 }
